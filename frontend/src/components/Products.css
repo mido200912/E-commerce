@@ -1,0 +1,310 @@
+.products-section {
+    padding: 6rem 2rem;
+    background: var(--bg-primary);
+    position: relative;
+}
+
+.products-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    position: relative;
+    animation: fadeInUp 0.8s ease;
+}
+
+.products-background-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(5rem, 15vw, 12rem);
+    font-weight: 800;
+    color: rgba(201, 169, 97, 0.03);
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 0;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    animation: fadeIn 1.2s ease;
+}
+
+.products-title {
+    position: relative;
+    z-index: 1;
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    animation: fadeInUp 0.8s ease 0.2s both;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.product-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+/* Stagger animation for products */
+.product-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.product-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.product-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.product-card:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.product-card:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+.product-card:nth-child(6) {
+    animation-delay: 0.6s;
+}
+
+.product-card:nth-child(7) {
+    animation-delay: 0.7s;
+}
+
+.product-card:nth-child(8) {
+    animation-delay: 0.8s;
+}
+
+.product-card:nth-child(n+9) {
+    animation-delay: 0.9s;
+}
+
+.product-card:hover {
+    border-color: var(--border-medium);
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+}
+
+.product-image-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 125%;
+    background: var(--bg-secondary);
+    overflow: hidden;
+}
+
+.product-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.08);
+}
+
+.product-info {
+    padding: 1.75rem;
+    background: white;
+}
+
+.product-name {
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    transition: all 0.3s ease;
+    line-height: 1.4;
+}
+
+.product-price {
+    font-size: 1.125rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    letter-spacing: -0.01em;
+}
+
+.product-barcode {
+    display: flex;
+    gap: 2px;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-light);
+    overflow: hidden;
+    height: 35px;
+}
+
+.barcode-line {
+    flex: 1;
+    height: 100%;
+    background: var(--text-primary);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product-card:hover .barcode-line {
+    transform: scaleY(1);
+}
+
+.barcode-line:nth-child(1) {
+    transition-delay: 0.05s;
+}
+
+.barcode-line:nth-child(2) {
+    transition-delay: 0.1s;
+}
+
+.barcode-line:nth-child(3) {
+    transition-delay: 0.15s;
+}
+
+.barcode-line:nth-child(4) {
+    transition-delay: 0.2s;
+}
+
+.barcode-line:nth-child(5) {
+    transition-delay: 0.25s;
+}
+
+.barcode-line:nth-child(6) {
+    transition-delay: 0.3s;
+}
+
+.barcode-line:nth-child(7) {
+    transition-delay: 0.35s;
+}
+
+.barcode-line:nth-child(8) {
+    transition-delay: 0.4s;
+}
+
+.barcode-line:nth-child(even) {
+    opacity: 0.4;
+}
+
+.add-to-cart-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--text-primary);
+    color: white;
+    border: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+}
+
+.add-to-cart-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--primary-gold);
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -1;
+}
+
+.add-to-cart-btn:hover::before {
+    left: 0;
+}
+
+.add-to-cart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.add-to-cart-btn:active {
+    transform: translateY(0);
+}
+
+.no-products {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+    font-size: 1.125rem;
+    animation: fadeIn 0.8s ease;
+}
+
+/* Loading Animation */
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+}
+
+.loading {
+    width: 50px;
+    height: 50px;
+    border: 3px solid var(--border-light);
+    border-top-color: var(--primary-gold);
+    border-radius: 50%;
+    animation: rotate 1s linear infinite;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .products-section {
+        padding: 4rem 1.5rem;
+    }
+
+    .products-header {
+        margin-bottom: 3rem;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .product-info {
+        padding: 1.25rem;
+    }
+
+    .product-name {
+        font-size: 0.938rem;
+    }
+
+    .product-price {
+        font-size: 1rem;
+    }
+
+    .products-background-text {
+        font-size: clamp(3rem, 10vw, 6rem);
+    }
+}

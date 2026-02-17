@@ -1,0 +1,43 @@
+.checkout-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.order-summary {
+    background: var(--secondary-dark);
+    padding: 1.5rem;
+    border-radius: 10px;
+    border: 1px solid var(--primary-gold);
+    margin-top: 1rem;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.8rem;
+    color: var(--text-light);
+}
+
+.summary-value {
+    color: var(--primary-gold);
+    font-weight: 600;
+}
+
+.summary-divider {
+    border: none;
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+    margin: 1rem 0;
+}
+
+.summary-total {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-bottom: 0;
+}
