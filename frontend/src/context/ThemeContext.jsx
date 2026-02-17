@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '../utils/axios';
 
 const ThemeContext = createContext();
 

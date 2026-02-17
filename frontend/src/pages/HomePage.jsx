@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import axios from '../utils/axios';
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
 import Collections from '../components/Collections'

@@ -4,7 +4,7 @@ import { ThemeProvider } from './context/ThemeContext'
 import HomePage from './pages/HomePage'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
-import axios from 'axios'
+import axios from './utils/axios';
 import './App.css'
 
 function App() {

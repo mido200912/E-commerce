@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import axios from '../../utils/axios';
 import AnalyticsChart from './AnalyticsChart'
 import './Dashboard.css'
 
@@ -172,8 +172,8 @@ function Dashboard() {
                                             <td>{formatDate(order.createdAt)}</td>
                                             <td>
                                                 <span className={`badge ${order.status === 'delivered' ? 'badge-success' :
-                                                        order.status === 'cancelled' ? 'badge-danger' :
-                                                            'badge-warning'
+                                                    order.status === 'cancelled' ? 'badge-danger' :
+                                                        'badge-warning'
                                                     }`}>
                                                     {order.status === 'pending' ? 'انتظار' :
                                                         order.status === 'delivered' ? 'تم' :

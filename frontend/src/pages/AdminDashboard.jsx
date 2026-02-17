@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import axios from '../utils/axios';
 import AdminSidebar from '../components/admin/AdminSidebar'
 import Dashboard from '../components/admin/Dashboard'
 import CollectionsManager from '../components/admin/CollectionsManager'
