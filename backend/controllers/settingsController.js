@@ -23,8 +23,11 @@ exports.updateSettings = async (req, res) => {
         const settings = await Settings.getSettings();
 
         // Update all provided fields
+        const allowedFields = Object.keys(Settings.schema.paths).filter(
+            key => !['_id', '__v', 'createdAt', 'updatedAt'].includes(key)
+        );
         Object.keys(req.body).forEach(key => {
-            if (settings.schema.paths[key]) {
+            if (allowedFields.includes(key)) {
                 settings[key] = req.body[key];
             }
         });

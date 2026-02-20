@@ -7,9 +7,9 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://shop-rahhalah.vercel.app', // Deployed Backend
+        target: 'http://localhost:3000', // Local Backend for dev
         changeOrigin: true,
-        secure: true,
+        secure: false,
         cookieDomainRewrite: "localhost"
       }
     }
@@ -19,3 +19,4 @@ export default defineConfig({
     sourcemap: false
   }
 })
+

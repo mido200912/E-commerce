@@ -43,13 +43,14 @@ app.use(helmet({
 // 2. CORS - Configure allowed origins
 const allowedOrigins = [
     'http://localhost:5173',
+    'http://localhost:4173',
     'https://rahhalah.vercel.app',
     'https://shop-rahhalah.vercel.app',
-    'https://ra-hhalah.vercel.app', // Added based on previous error logs
-    'https://rahh-alah.vercel.app', // Added based on previous error logs
+    'https://ra-hhalah.vercel.app',
+    'https://rahh-alah.vercel.app',
     process.env.FRONTEND_URL,
     ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [])
-].filter(Boolean); // Remove undefined/null
+].filter(Boolean);
 
 const corsOptions = {
     origin: function (origin, callback) {
