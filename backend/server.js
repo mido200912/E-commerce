@@ -27,47 +27,49 @@ connectDB();
 // Security Middleware
 // ===================
 
-// 1. Helmet - Set security headers
+// 1. Helmet - Set security headers (relaxed for API)
 app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            styleSrc: ["'self'", "'unsafe-inline'"],
-            scriptSrc: ["'self'"],
-            imgSrc: ["'self'", "data:", "https:"],
-        },
-    },
+    contentSecurityPolicy: false, // Disable CSP for API server
     crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: 'cross-origin' }
 }));
 
 // 2. CORS - Configure allowed origins
 const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:4173',
-    'https://rahhalah.vercel.app',
-    'https://shop-rahhalah.vercel.app',
-    'https://ra-hhalah.vercel.app',
-    'https://rahh-alah.vercel.app',
+    'http://localhost:3000',
     process.env.FRONTEND_URL,
-    ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [])
+    ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',').map(s => s.trim()) : [])
 ].filter(Boolean);
 
 const corsOptions = {
     origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl requests)
+        // Allow requests with no origin (like mobile apps, curl, or serverless)
         if (!origin) return callback(null, true);
+
+        // Allow all vercel.app subdomains for preview deployments
+        if (origin.endsWith('.vercel.app')) {
+            return callback(null, true);
+        }
 
         if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
             callback(null, true);
         } else {
             console.log('Blocked Origin:', origin);
-            console.log('Allowed Origins:', allowedOrigins); // Debug log
+            console.log('Allowed Origins:', allowedOrigins);
             callback(new Error('Not allowed by CORS'));
         }
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    exposedHeaders: ['Content-Disposition'],
     optionsSuccessStatus: 200
 };
+
+// Handle preflight requests explicitly
+app.options('*', cors(corsOptions));
 app.use(cors(corsOptions));
 
 // 3. Rate Limiting - Prevent brute force attacks
@@ -158,21 +160,26 @@ async function initializeAdmin() {
 app.use(notFound);
 app.use(errorHandler);
 
-// Start Server
+// Initialize admin on startup
+initializeAdmin();
+
+// Start Server (only when not in serverless/Vercel environment)
 const PORT = process.env.PORT || 3000;
 
-const server = app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
-    console.log(`📡 API available at http://localhost:${PORT}/api`);
-
-    // Initialize admin after server starts
-    initializeAdmin();
-});
+let server;
+if (!process.env.VERCEL) {
+    server = app.listen(PORT, () => {
+        console.log(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
+        console.log(`📡 API available at http://localhost:${PORT}/api`);
+    });
+}
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
     console.error('❌ Unhandled Rejection:', err);
-    server.close(() => process.exit(1));
+    if (server) {
+        server.close(() => process.exit(1));
+    }
 });
 
 // Handle uncaught exceptions
@@ -184,9 +191,11 @@ process.on('uncaughtException', (err) => {
 // Graceful shutdown
 process.on('SIGTERM', () => {
     console.log('👋 SIGTERM received, shutting down gracefully');
-    server.close(() => {
-        console.log('Process terminated');
-    });
+    if (server) {
+        server.close(() => {
+            console.log('Process terminated');
+        });
+    }
 });
 
 module.exports = app;

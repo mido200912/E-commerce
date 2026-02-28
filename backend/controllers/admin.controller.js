@@ -59,15 +59,18 @@ exports.login = asyncHandler(async (req, res) => {
     const token = generateToken(admin._id);
 
     // Set cookie options - sameSite 'none' required for cross-domain in production
+    const isProduction = process.env.NODE_ENV === 'production';
     const cookieOptions = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        path: '/'
     };
 
     res.cookie('adminToken', token, cookieOptions);
 
+    // Send token in response body too (for localStorage fallback on cross-domain)
     res.status(200).json({
         success: true,
         token,
@@ -83,9 +86,13 @@ exports.login = asyncHandler(async (req, res) => {
 // @route   POST /api/admin/logout
 // @access  Private
 exports.logout = asyncHandler(async (req, res) => {
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('adminToken', '', {
         httpOnly: true,
-        expires: new Date(0)
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
+        expires: new Date(0),
+        path: '/'
     });
 
     res.status(200).json({

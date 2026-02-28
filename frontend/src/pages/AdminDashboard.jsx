@@ -33,9 +33,12 @@ function AdminDashboard() {
     const handleLogout = async () => {
         try {
             await axios.post('/api/admin/logout')
-            navigate('/admin/login')
         } catch (error) {
             console.error('Logout error:', error)
+        } finally {
+            // Always clear local token and redirect
+            localStorage.removeItem('adminToken')
+            navigate('/admin/login')
         }
     }
 

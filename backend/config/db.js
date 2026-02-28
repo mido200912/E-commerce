@@ -1,9 +1,23 @@
 const mongoose = require('mongoose');
 
-const connectDB = async () => {
-    try {
-        const conn = await mongoose.connect(process.env.MONGODB_URI);
+// Cache the database connection in serverless environments
+let cachedDb = null;
 
+const connectDB = async () => {
+    // If we have a cached connection, use it
+    if (cachedDb && mongoose.connection.readyState === 1) {
+        console.log('⚡ Using cached MongoDB connection');
+        return cachedDb;
+    }
+
+    try {
+        const conn = await mongoose.connect(process.env.MONGODB_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            serverSelectionTimeoutMS: 5000 // timeout after 5s instead of default 30s
+        });
+
+        cachedDb = conn;
         console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
 
         // Handle connection events
@@ -13,6 +27,7 @@ const connectDB = async () => {
 
         mongoose.connection.on('disconnected', () => {
             console.log('MongoDB disconnected');
+            cachedDb = null;
         });
 
         // Graceful shutdown

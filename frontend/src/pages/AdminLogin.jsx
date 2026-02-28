@@ -24,7 +24,12 @@ function AdminLogin() {
         e.preventDefault()
 
         try {
-            await axios.post('/api/admin/login', formData)
+            const response = await axios.post('/api/admin/login', formData)
+            // Token is stored automatically by axios interceptor
+            // but let's also store it explicitly as backup
+            if (response.data?.token) {
+                localStorage.setItem('adminToken', response.data.token)
+            }
             navigate('/admin')
         } catch (err) {
             setError('البريد الإلكتروني أو كلمة المرور غير صحيحة')
