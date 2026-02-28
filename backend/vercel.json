@@ -9,7 +9,13 @@
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "server.js"
+            "dest": "server.js",
+            "headers": {
+                "Access-Control-Allow-Origin": "https://rahhalah0.vercel.app",
+                "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,PATCH,OPTIONS",
+                "Access-Control-Allow-Headers": "X-Requested-With,Content-Type,Authorization,Accept",
+                "Access-Control-Allow-Credentials": "true"
+            }
         }
     ]
 }
