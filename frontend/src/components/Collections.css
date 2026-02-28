@@ -20,7 +20,7 @@
 }
 
 .section-header p {
-    color: var(--text-gray);
+    color: var(--text-secondary);
     font-size: 1.2rem;
 }
 
@@ -32,11 +32,11 @@
 }
 
 .product-card {
-    background: var(--card-bg);
+    background: var(--bg-primary);
     border-radius: 15px;
     overflow: hidden;
     transition: all 0.4s ease;
-    border: 1px solid rgba(212, 175, 55, 0.1);
+    border: 1px solid var(--border-medium);
     cursor: pointer;
     position: relative;
 }
@@ -60,7 +60,7 @@
 
 .product-card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(212, 175, 55, 0.2);
+    box-shadow: var(--shadow-xl);
     border-color: var(--primary-gold);
 }
 
@@ -83,11 +83,11 @@
 .product-title {
     font-size: 1.4rem;
     margin-bottom: 0.8rem;
-    color: var(--text-light);
+    color: var(--text-primary);
 }
 
 .product-description {
-    color: var(--text-gray);
+    color: var(--text-secondary);
     margin-bottom: 1rem;
     font-size: 0.95rem;
     line-height: 1.5;
@@ -136,7 +136,7 @@
 
 .empty-message {
     text-align: center;
-    color: var(--text-gray);
+    color: var(--text-muted);
     padding: 4rem 0;
     grid-column: 1 / -1;
 }
