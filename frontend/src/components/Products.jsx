@@ -32,13 +32,18 @@ function Products({ selectedCollection, onAddToCart, onProductClick, collections
 
     const quickAddToCart = (e, product) => {
         e.stopPropagation()
-        const cartItem = {
-            product: product,
-            quantity: 1,
-            size: product.sizes?.[0] || null,
-            color: product.colors?.[0] || null
+        if ((product.sizes && product.sizes.length > 0) || (product.colors && product.colors.length > 0)) {
+            // Open modal to choose size and color
+            onProductClick(product)
+        } else {
+            const cartItem = {
+                product: product,
+                quantity: 1,
+                size: null,
+                color: null
+            }
+            onAddToCart(cartItem)
         }
-        onAddToCart(cartItem)
     }
 
     if (loading) {
@@ -91,6 +96,19 @@ function Products({ selectedCollection, onAddToCart, onProductClick, collections
                             </div>
                             <div className="product-info">
                                 <h3 className="product-name">{product.title}</h3>
+                                {product.description && (
+                                    <p style={{
+                                        fontSize: '0.85rem',
+                                        color: 'var(--text-muted)',
+                                        margin: '0.25rem 0 0.5rem',
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 2,
+                                        WebkitBoxOrient: 'vertical',
+                                        overflow: 'hidden'
+                                    }}>
+                                        {product.description}
+                                    </p>
+                                )}
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                                     <p className="product-price" style={{ margin: 0 }}>LE {product.price}.00</p>
                                     {product.isOnSale && product.originalPrice && (

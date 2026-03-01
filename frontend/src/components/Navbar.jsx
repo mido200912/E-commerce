@@ -28,11 +28,30 @@ function Navbar({ cartCount, onCartClick, collections = [], onCollectionSelect }
                 <div className="navbar-content">
                     <ul className="nav-links">
                         <li><a onClick={() => handleCollectionClick('')}>الكل</a></li>
-                        {collections.map(col => (
+                        {collections.slice(0, 3).map(col => (
                             <li key={col._id}>
-                                <a onClick={() => handleCollectionClick(col._id)}>{col.name}</a>
+                                <a
+                                    onClick={() => handleCollectionClick(col._id)}
+                                    title={col.name}
+                                >
+                                    {col.name.length > 15 ? `${col.name.substring(0, 15)}...` : col.name}
+                                </a>
                             </li>
                         ))}
+                        {collections.length > 3 && (
+                            <li className="dropdown">
+                                <a>المزيد ▼</a>
+                                <ul className="dropdown-content">
+                                    {collections.slice(3).map(col => (
+                                        <li key={col._id}>
+                                            <a onClick={() => handleCollectionClick(col._id)} title={col.name}>
+                                                {col.name}
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </li>
+                        )}
                     </ul>
 
                     <a href="/" className="logo">
