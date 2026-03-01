@@ -72,17 +72,33 @@ function Products({ selectedCollection, onAddToCart, onProductClick, collections
                             className="product-card"
                             onClick={() => onProductClick(product)}
                         >
-                            <div className="product-image-wrapper">
+                            <div className="product-image-wrapper" style={{ position: 'relative' }}>
                                 <img
                                     src={product.images[0] || 'https://via.placeholder.com/400x400/000000/FFD700?text=RAHHALAH'}
                                     alt={product.title}
                                     className="product-image"
                                     onError={(e) => e.target.src = 'https://via.placeholder.com/400x400/000000/FFD700?text=RAHHALAH'}
                                 />
+                                {product.isOnSale && (
+                                    <div style={{
+                                        position: 'absolute', top: '10px', right: '10px',
+                                        background: 'var(--primary-gold)', color: 'var(--bg-primary)',
+                                        padding: '4px 10px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold', zIndex: 1
+                                    }}>
+                                        خصم
+                                    </div>
+                                )}
                             </div>
                             <div className="product-info">
                                 <h3 className="product-name">{product.title}</h3>
-                                <p className="product-price">LE {product.price}.00</p>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                                    <p className="product-price" style={{ margin: 0 }}>LE {product.price}.00</p>
+                                    {product.isOnSale && product.originalPrice && (
+                                        <p style={{ textDecoration: 'line-through', color: 'var(--text-muted)', fontSize: '0.9rem', margin: 0 }}>
+                                            LE {product.originalPrice}.00
+                                        </p>
+                                    )}
+                                </div>
                                 <button
                                     className="add-to-cart-btn"
                                     onClick={(e) => quickAddToCart(e, product)}

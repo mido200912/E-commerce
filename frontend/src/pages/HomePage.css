@@ -97,6 +97,7 @@
     position: relative;
     overflow: hidden;
     border-radius: 0;
+    z-index: 1;
 }
 
 .btn::before {
@@ -108,6 +109,7 @@
     height: 100%;
     background: var(--primary-gold);
     transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -1;
 }
 
 .btn:hover::before {

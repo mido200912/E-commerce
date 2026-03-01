@@ -2,7 +2,7 @@ import React from 'react'
 import { FaShoppingCart, FaSearch } from 'react-icons/fa'
 import './Navbar.css'
 
-function Navbar({ cartCount, onCartClick }) {
+function Navbar({ cartCount, onCartClick, collections = [], onCollectionSelect }) {
     const logoUrl = 'C:/Users/mido2/.gemini/antigravity/brain/55ff0f4d-8c1b-4852-b3ad-7567544a2cec/uploaded_media_1771265308057.png'
 
     const scrollToSection = (sectionId) => {
@@ -10,6 +10,13 @@ function Navbar({ cartCount, onCartClick }) {
         if (element) {
             element.scrollIntoView({ behavior: 'smooth' })
         }
+    }
+
+    const handleCollectionClick = (collectionId) => {
+        if (onCollectionSelect) {
+            onCollectionSelect(collectionId)
+        }
+        scrollToSection('products')
     }
 
     return (
@@ -20,9 +27,12 @@ function Navbar({ cartCount, onCartClick }) {
             <nav className="navbar">
                 <div className="navbar-content">
                     <ul className="nav-links">
-                        <li><a onClick={() => scrollToSection('home')}>Home</a></li>
-                        <li><a onClick={() => scrollToSection('collections')}>Catalog</a></li>
-                        <li><a onClick={() => scrollToSection('products')}>Contact</a></li>
+                        <li><a onClick={() => handleCollectionClick('')}>الكل</a></li>
+                        {collections.map(col => (
+                            <li key={col._id}>
+                                <a onClick={() => handleCollectionClick(col._id)}>{col.name}</a>
+                            </li>
+                        ))}
                     </ul>
 
                     <a href="/" className="logo">

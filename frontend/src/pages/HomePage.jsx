@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from '../utils/axios';
+import { useTheme } from '../context/ThemeContext';
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
 import Collections from '../components/Collections'
@@ -11,6 +12,7 @@ import Footer from '../components/Footer'
 import './HomePage.css'
 
 function HomePage() {
+    const { theme } = useTheme()
     const [cart, setCart] = useState([])
     const [collections, setCollections] = useState([])
     const [selectedCollection, setSelectedCollection] = useState('')
@@ -114,9 +116,13 @@ function HomePage() {
             <Navbar
                 cartCount={calculateCartCount()}
                 onCartClick={() => setShowCart(true)}
+                collections={collections}
+                onCollectionSelect={handleFilterByCollection}
             />
 
             <Hero />
+
+            <Collections onFilterByCollection={handleFilterByCollection} />
 
             <Products
                 selectedCollection={selectedCollection}
@@ -147,11 +153,31 @@ function HomePage() {
                 <CheckoutModal
                     cart={cart}
                     onClose={() => setShowCheckout(false)}
-                    onSuccess={() => {
+                    onSuccess={(orderData) => {
                         setShowCheckout(false)
                         setCart([])
                         setShowSuccess(true)
                         setTimeout(() => setShowSuccess(false), 3000)
+
+                        if (theme && theme.whatsappNumber) {
+                            let text = `مرحباً، لقد قمت بطلب جديد:\n`;
+                            text += `الاسم: ${orderData.customerName}\n`;
+                            text += `العنوان: ${orderData.address} - ${orderData.governorate}\n`;
+                            text += `الهاتف: ${orderData.phone}\n`;
+                            text += `الإجمالي: ${orderData.total} ج.م\n`;
+
+                            if (cart && cart.length > 0) {
+                                text += `\nالمنتجات:\n`;
+                                cart.forEach(item => {
+                                    text += `- ${item.product.title || 'منتج'} (الكمية: ${item.quantity})\n`;
+                                });
+                            }
+
+                            text += `\nالرجاء تأكيد طلبي.`;
+
+                            const encodedText = encodeURIComponent(text);
+                            window.open(`https://wa.me/${theme.whatsappNumber}?text=${encodedText}`, '_blank');
+                        }
                     }}
                 />
             )}

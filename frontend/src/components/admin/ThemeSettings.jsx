@@ -51,6 +51,14 @@ function ThemeSettings() {
         facebook: '',
         instagram: '',
         twitter: '',
+        whatsappNumber: '',
+
+        // Marketing
+        facebookPixelId: '',
+
+        // Frontend Text
+        heroTitle: 'NEW COLLECTION',
+        heroSubtitle: 'Explore our latest arrivals',
 
         // Typography
         fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
@@ -478,6 +486,49 @@ function ThemeSettings() {
                     </div>
                 </div>
 
+                {/* Frontend Marketing Section */}
+                <div className="settings-section">
+                    <h2 className="section-title">
+                        <FaGlobe /> النصوص التسويقية والبيكسل
+                    </h2>
+                    <div className="form-group">
+                        <label>
+                            عنوان الصفحة الرئيسية (البانر)
+                        </label>
+                        <input
+                            type="text"
+                            name="heroTitle"
+                            value={settings.heroTitle}
+                            onChange={handleChange}
+                            placeholder="NEW COLLECTION"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>
+                            نص البانر الفرعي
+                        </label>
+                        <input
+                            type="text"
+                            name="heroSubtitle"
+                            value={settings.heroSubtitle}
+                            onChange={handleChange}
+                            placeholder="Explore our latest arrivals"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>
+                            Facebook Pixel ID (اختياري)
+                        </label>
+                        <input
+                            type="text"
+                            name="facebookPixelId"
+                            value={settings.facebookPixelId}
+                            onChange={handleChange}
+                            placeholder="XXXXXXXXXXXXXXX"
+                        />
+                    </div>
+                </div>
+
                 {/* Contact Information Section */}
                 <div className="settings-section">
                     <h2 className="section-title">
@@ -517,6 +568,18 @@ function ThemeSettings() {
                             onChange={handleChange}
                             placeholder="الرياض، المملكة العربية السعودية"
                             rows="2"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>
+                            <FaPhone /> رقم الواتساب للطلبات (مثال: 201111111111)
+                        </label>
+                        <input
+                            type="text"
+                            name="whatsappNumber"
+                            value={settings.whatsappNumber}
+                            onChange={handleChange}
+                            placeholder="رقم الموبايل شامل كود الدولة بدون +"
                         />
                     </div>
                 </div>

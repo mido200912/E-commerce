@@ -168,6 +168,19 @@ function OrdersManager() {
 
                                     <button
                                         className="btn btn-secondary btn-sm"
+                                        onClick={() => {
+                                            const itemsText = order.items.map(i => `- ${i.product?.title} (الكمية: ${i.quantity})`).join('\n');
+                                            const text = encodeURIComponent(`مرحباً ${order.customerName}،\nتفاصيل طلبك رقم #${order._id.substring(order._id.length - 8)}:\n${itemsText}\nالإجمالي: ${order.total} ج.م\nتم استلام طلبك وجاري تجهيزه.`);
+                                            window.open(`https://wa.me/2${order.phone}?text=${text}`, '_blank');
+                                        }}
+                                        title="إرسال فاتورة واتساب للعميل"
+                                        style={{ background: '#25D366', color: '#fff', borderColor: '#25D366' }}
+                                    >
+                                        💬 واتساب
+                                    </button>
+
+                                    <button
+                                        className="btn btn-secondary btn-sm"
                                         onClick={() => handleDownloadPDF(order._id)}
                                         title="طباعة الفاتورة"
                                     >

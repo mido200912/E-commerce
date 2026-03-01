@@ -90,6 +90,26 @@ const settingsSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    whatsappNumber: {
+        type: String,
+        default: ''
+    },
+
+    // Marketing
+    facebookPixelId: {
+        type: String,
+        default: ''
+    },
+
+    // Frontend Text
+    heroTitle: {
+        type: String,
+        default: 'NEW COLLECTION'
+    },
+    heroSubtitle: {
+        type: String,
+        default: 'Explore our latest arrivals'
+    },
 
     // Typography
     fontFamily: {

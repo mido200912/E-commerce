@@ -218,6 +218,7 @@
     text-transform: uppercase;
     position: relative;
     overflow: hidden;
+    z-index: 1;
 }
 
 .add-to-cart-btn::before {

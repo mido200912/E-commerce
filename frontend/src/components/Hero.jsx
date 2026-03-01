@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTheme } from '../context/ThemeContext';
 import './Hero.css';
 
 const images = [
@@ -7,6 +8,7 @@ const images = [
 ];
 
 function Hero() {
+    const { theme } = useTheme();
     const [currentImage, setCurrentImage] = useState(0);
 
     useEffect(() => {
@@ -36,8 +38,8 @@ function Hero() {
             <div className="hero-overlay"></div>
 
             <div className="hero-content">
-                <h1 className="hero-title">RAHHALAH</h1>
-                <p className="hero-subtitle">Premium Streetwear Collection</p>
+                <h1 className="hero-title">{theme?.heroTitle || 'NEW COLLECTION'}</h1>
+                <p className="hero-subtitle">{theme?.heroSubtitle || 'Explore our latest arrivals'}</p>
                 <button className="shop-all-btn" onClick={scrollToProducts}>
                     Discover Collection
                 </button>

@@ -112,6 +112,7 @@
     overflow: hidden;
     animation: fadeInUp 1s ease 0.7s both;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 1;
 }
 
 .shop-all-btn::before {

@@ -55,7 +55,19 @@ function ProductModal({ product, onClose, onAddToCart }) {
 
                     <p className="product-description-full">{product.description}</p>
 
-                    <p className="product-price-large">{product.price} جنيه</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+                        <p className="product-price-large" style={{ margin: 0 }}>{product.price} جنيه</p>
+                        {product.isOnSale && product.originalPrice && (
+                            <p className="product-original-price" style={{ textDecoration: 'line-through', color: 'var(--text-muted)', fontSize: '1.2rem', margin: 0 }}>
+                                {product.originalPrice} جنيه
+                            </p>
+                        )}
+                        {product.isOnSale && (
+                            <span className="discount-badge" style={{ background: 'var(--primary-gold)', color: 'var(--bg-primary)', padding: '4px 12px', borderRadius: '4px', fontWeight: 'bold', fontSize: '0.9rem' }}>
+                                التخفيضات
+                            </span>
+                        )}
+                    </div>
 
                     {product.sizes && product.sizes.length > 0 && (
                         <div className="form-group">

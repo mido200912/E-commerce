@@ -80,6 +80,7 @@
     position: relative;
     overflow: hidden;
     letter-spacing: 0.5px;
+    z-index: 1;
 }
 
 .newsletter-btn::before {
@@ -149,6 +150,7 @@
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+    z-index: 1;
 }
 
 .admin-link::before {
