@@ -10,7 +10,6 @@ function AdminLogin() {
         password: ''
     })
     const [error, setError] = useState('')
-    const logoUrl = 'https://placehold.co/400x400/D4AF37/000000?text=R'
 
     const handleChange = (e) => {
         setFormData(prev => ({
@@ -25,8 +24,6 @@ function AdminLogin() {
 
         try {
             const response = await axios.post('/api/admin/login', formData)
-            // Token is stored automatically by axios interceptor
-            // but let's also store it explicitly as backup
             if (response.data?.token) {
                 localStorage.setItem('adminToken', response.data.token)
             }
@@ -40,7 +37,6 @@ function AdminLogin() {
         <div className="login-container">
             <div className="login-box">
                 <div className="login-logo">
-                    <img src={logoUrl} alt="Rahhalah" />
                     <h1>RAHHALAH</h1>
                     <p>لوحة تحكم الأدمن</p>
                 </div>
@@ -58,6 +54,7 @@ function AdminLogin() {
                             type="email"
                             className="form-control"
                             name="email"
+                            placeholder="admin@rahhalah.com"
                             value={formData.email}
                             onChange={handleChange}
                             required
@@ -71,6 +68,7 @@ function AdminLogin() {
                             type="password"
                             className="form-control"
                             name="password"
+                            placeholder="••••••••"
                             value={formData.password}
                             onChange={handleChange}
                             required

@@ -1,40 +1,40 @@
-/* Admin Layout */
+/* Admin Layout — RAHHALAH DARK/GOLD THEME */
+
 .admin-layout {
     display: flex;
     min-height: 100vh;
-    background-color: var(--bg-secondary);
+    background-color: #000000;
+    /* Deep black for layout background */
     direction: rtl;
     /* Force RTL for Admin Panel */
 }
 
 .main-content {
     flex: 1;
-    padding: 2rem;
+    padding: 2.5rem;
     overflow-x: hidden;
     width: 100%;
+    background-color: #000000;
 }
 
-/* Mobile Toggle Button (Adding Hamburger) */
+/* Mobile Toggle Button */
 .mobile-toggle {
     display: none;
-    /* Hidden on Desktop */
     position: fixed;
-    top: 1rem;
-    left: 1rem;
-    /* In RTL, this is left corner, opposite to sidebar? No, usually hamburger is where sidebar is. */
-    /* Let's put toggle on Right because sidebar is Right in RTL */
-    right: 1.5rem;
-    z-index: 1100;
-    background: var(--primary-gold);
-    color: white;
-    width: 45px;
-    height: 45px;
-    border-radius: 8px;
+    top: 1.25rem;
+    right: 1.25rem;
+    z-index: 1001;
+    /* Above sidebar */
+    background: #D4AF37;
+    color: #000;
+    width: 48px;
+    height: 48px;
+    border-radius: 4px;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
 }
 
 .sidebar-backdrop {
@@ -47,16 +47,16 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: var(--bg-primary);
+    background: #0D0D0D;
 }
 
 .loading {
     width: 50px;
     height: 50px;
-    border: 3px solid rgba(212, 175, 55, 0.3);
+    border: 2px solid rgba(212, 175, 55, 0.1);
     border-radius: 50%;
-    border-top-color: var(--primary-gold);
-    animation: spin 1s ease-in-out infinite;
+    border-top-color: #D4AF37;
+    animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
 }
 
 @keyframes spin {
@@ -72,8 +72,7 @@
     }
 
     .main-content {
-        padding: 5rem 1rem 2rem 1rem;
-        /* Top padding for toggle space */
+        padding: 5.5rem 1.25rem 2.5rem;
     }
 
     .mobile-toggle {
@@ -83,12 +82,10 @@
     .sidebar-backdrop {
         display: block;
         position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
         z-index: 999;
-        backdrop-filter: blur(2px);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
     }
 }

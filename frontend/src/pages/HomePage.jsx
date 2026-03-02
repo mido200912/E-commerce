@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import axios from '../utils/axios';
-import { useTheme } from '../context/ThemeContext';
+import axios from '../utils/axios'
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
-import Collections from '../components/Collections'
+import BestSellers from '../components/BestSellers'
+import CollectionSlider from '../components/CollectionSlider'
 import Products from '../components/Products'
+import AIChat from '../components/AIChat'
 import ProductModal from '../components/ProductModal'
 import CartModal from '../components/CartModal'
 import CheckoutModal from '../components/CheckoutModal'
@@ -12,56 +13,29 @@ import Footer from '../components/Footer'
 import './HomePage.css'
 
 function HomePage() {
-    const { theme } = useTheme()
     const [cart, setCart] = useState([])
     const [collections, setCollections] = useState([])
     const [selectedCollection, setSelectedCollection] = useState('')
+    const [searchQuery, setSearchQuery] = useState('')
     const [selectedProduct, setSelectedProduct] = useState(null)
     const [showCart, setShowCart] = useState(false)
     const [showCheckout, setShowCheckout] = useState(false)
     const [showSuccess, setShowSuccess] = useState(false)
 
     useEffect(() => {
-        // Load cart from localStorage
         const savedCart = localStorage.getItem('cart')
-        if (savedCart) {
-            setCart(JSON.parse(savedCart))
-        }
-        // Load collections
+        if (savedCart) setCart(JSON.parse(savedCart))
         loadCollections()
-
-        // Add scroll reveal animation
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        }
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('revealed')
-                }
-            })
-        }, observerOptions)
-
-        // Observe all scroll-reveal elements
-        const revealElements = document.querySelectorAll('.scroll-reveal')
-        revealElements.forEach(el => observer.observe(el))
-
-        return () => {
-            revealElements.forEach(el => observer.unobserve(el))
-        }
     }, [])
 
     useEffect(() => {
-        // Save cart to localStorage whenever it changes
         localStorage.setItem('cart', JSON.stringify(cart))
     }, [cart])
 
     const loadCollections = async () => {
         try {
             const response = await axios.get('/api/collections')
-            setCollections(response.data.data)
+            setCollections(response.data.data || [])
         } catch (error) {
             console.error('Error loading collections:', error)
         }
@@ -69,68 +43,100 @@ function HomePage() {
 
     const handleAddToCart = (cartItem) => {
         setCart(prev => [...prev, cartItem])
-        showNotification('تم إضافة المنتج للسلة')
-    }
-
-    const handleUpdateCart = (updatedCart) => {
-        setCart(updatedCart)
+        showToast('✓ تم إضافة المنتج للسلة')
     }
 
     const handleRemoveFromCart = (index) => {
         setCart(prev => prev.filter((_, i) => i !== index))
     }
 
-    const handleFilterByCollection = (collectionId) => {
-        setSelectedCollection(collectionId)
+    const handleUpdateCart = (updatedCart) => {
+        setCart(updatedCart)
     }
 
-    const handleProductClick = (product) => {
-        setSelectedProduct(product)
+    const handleCollectionSelect = (collectionId) => {
+        setSelectedCollection(collectionId)
+        setSearchQuery('')
+        // scroll to products section
+        setTimeout(() => {
+            document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })
+        }, 100)
     }
+
+    const handleSearch = (query) => {
+        setSearchQuery(query)
+        setSelectedCollection('')
+        if (query) {
+            setTimeout(() => {
+                document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })
+            }, 100)
+        }
+    }
+
+    const handleProductClick = (product) => setSelectedProduct(product)
 
     const handleCheckout = () => {
         setShowCart(false)
         setShowCheckout(true)
     }
 
-    const calculateCartCount = () => {
-        return cart.reduce((total, item) => total + item.quantity, 0)
-    }
+    const cartCount = cart.reduce((total, item) => total + item.quantity, 0)
 
-    const showNotification = (message) => {
-        const notification = document.createElement('div')
-        notification.className = 'notification'
-        notification.textContent = message
-        document.body.appendChild(notification)
-
+    const showToast = (message) => {
+        const toast = document.createElement('div')
+        toast.className = 'notification'
+        toast.textContent = message
+        document.body.appendChild(toast)
         setTimeout(() => {
-            notification.classList.add('fade-out')
-            setTimeout(() => {
-                document.body.removeChild(notification)
-            }, 300)
+            toast.classList.add('fade-out')
+            setTimeout(() => toast.parentNode?.removeChild(toast), 300)
         }, 2000)
     }
+
+    // Show sliders/bestsellers only when no filter active
+    const isFiltered = selectedCollection || searchQuery
 
     return (
         <div className="homepage">
             <Navbar
-                cartCount={calculateCartCount()}
+                cartCount={cartCount}
                 onCartClick={() => setShowCart(true)}
                 collections={collections}
-                onCollectionSelect={handleFilterByCollection}
+                onCollectionSelect={handleCollectionSelect}
+                onSearch={handleSearch}
             />
 
             <Hero />
 
-            <Collections onFilterByCollection={handleFilterByCollection} />
+            {/* Best Sellers – only when no filter */}
+            {!isFiltered && (
+                <BestSellers onProductClick={handleProductClick} />
+            )}
 
+            {/* Collection Sliders – only when no filter */}
+            {!isFiltered && collections.length > 0 && (
+                <section className="collections-sliders">
+                    {collections.map(col => (
+                        <CollectionSlider
+                            key={col._id}
+                            collection={col}
+                            onProductClick={handleProductClick}
+                        />
+                    ))}
+                </section>
+            )}
+
+            {/* All Products – always visible */}
             <Products
                 selectedCollection={selectedCollection}
+                searchQuery={searchQuery}
                 onAddToCart={handleAddToCart}
                 onProductClick={handleProductClick}
-                collections={collections}
             />
 
+            <AIChat />
+
+            {/* Modals */}
             {selectedProduct && (
                 <ProductModal
                     product={selectedProduct}
@@ -153,31 +159,11 @@ function HomePage() {
                 <CheckoutModal
                     cart={cart}
                     onClose={() => setShowCheckout(false)}
-                    onSuccess={(orderData) => {
+                    onSuccess={() => {
                         setShowCheckout(false)
                         setCart([])
                         setShowSuccess(true)
                         setTimeout(() => setShowSuccess(false), 3000)
-
-                        if (theme && theme.whatsappNumber) {
-                            let text = `مرحباً، لقد قمت بطلب جديد:\n`;
-                            text += `الاسم: ${orderData.customerName}\n`;
-                            text += `العنوان: ${orderData.address} - ${orderData.governorate}\n`;
-                            text += `الهاتف: ${orderData.phone}\n`;
-                            text += `الإجمالي: ${orderData.total} ج.م\n`;
-
-                            if (cart && cart.length > 0) {
-                                text += `\nالمنتجات:\n`;
-                                cart.forEach(item => {
-                                    text += `- ${item.product.title || 'منتج'} (الكمية: ${item.quantity})\n`;
-                                });
-                            }
-
-                            text += `\nالرجاء تأكيد طلبي.`;
-
-                            const encodedText = encodeURIComponent(text);
-                            window.open(`https://wa.me/${theme.whatsappNumber}?text=${encodedText}`, '_blank');
-                        }
                     }}
                 />
             )}
@@ -187,13 +173,8 @@ function HomePage() {
                     <div className="modal-content success-modal">
                         <div className="success-icon">✓</div>
                         <h2 className="success-title">تم إتمام الطلب بنجاح!</h2>
-                        <p className="success-message">
-                            شكراً لك! سيتم التواصل معك قريباً لتأكيد الطلب.
-                        </p>
-                        <button
-                            className="btn btn-primary"
-                            onClick={() => setShowSuccess(false)}
-                        >
+                        <p className="success-message">شكراً لك! سيتم التواصل معك قريباً 🙏</p>
+                        <button className="btn btn-primary" onClick={() => setShowSuccess(false)}>
                             حسناً
                         </button>
                     </div>

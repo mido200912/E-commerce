@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { FaChartLine, FaShoppingBag, FaTshirt } from 'react-icons/fa'
 import axios from '../../utils/axios';
 import AnalyticsChart from './AnalyticsChart'
 import './Dashboard.css'
@@ -99,46 +100,54 @@ function Dashboard() {
                     {/* Stats Grid */}
                     <div className="stats-grid">
                         <div className="stat-card">
-                            <h3>الزيارات</h3>
-                            <div className="stat-value">{overview.visits}</div>
-                            <div className="stat-trend">زائر</div>
+                            <div className="stat-icon"><FaChartLine /></div>
+                            <div className="stat-info">
+                                <h4>الزيارات</h4>
+                                <div className="stat-value">{overview.visits}</div>
+                            </div>
                         </div>
                         <div className="stat-card">
-                            <h3>الطلبات</h3>
-                            <div className="stat-value">{overview.orders}</div>
-                            <div className="stat-trend">طلب جديد</div>
+                            <div className="stat-icon"><FaShoppingBag /></div>
+                            <div className="stat-info">
+                                <h4>الطلبات</h4>
+                                <div className="stat-value">{overview.orders}</div>
+                            </div>
                         </div>
                         <div className="stat-card">
-                            <h3>المبيعات</h3>
-                            <div className="stat-value">{formatCurrency(overview.revenue)}</div>
-                            <div className="stat-trend" style={{ color: 'var(--primary-gold)' }}>إجمالي الدخل</div>
+                            <div className="stat-icon"><FaChartLine /></div>
+                            <div className="stat-info">
+                                <h4>المبيعات</h4>
+                                <div className="stat-value">{overview.revenue}</div>
+                            </div>
                         </div>
                         <div className="stat-card">
-                            <h3>المنتجات</h3>
-                            <div className="stat-value">{overview.productsCount}</div>
-                            <div className="stat-trend">منتج نشط</div>
+                            <div className="stat-icon"><FaTshirt /></div>
+                            <div className="stat-info">
+                                <h4>المنتجات</h4>
+                                <div className="stat-value">{overview.productsCount}</div>
+                            </div>
                         </div>
                     </div>
 
                     {/* Charts Area */}
-                    <div className="charts-container">
-                        <div className="chart-card">
-                            <div className="chart-header">
+                    <div className="dashboard-grid">
+                        <div className="dashboard-card">
+                            <div className="card-header">
                                 <h3>إحصائيات الزوار</h3>
                             </div>
                             {overview.chartData && overview.chartData.length > 0 ? (
-                                <AnalyticsChart data={overview.chartData} dataKey="visits" color="#0ea5e9" />
+                                <AnalyticsChart data={overview.chartData} dataKey="visits" color="#D4AF37" />
                             ) : (
                                 <p className="empty-message">لا توجد بيانات للعرض</p>
                             )}
                         </div>
 
-                        <div className="chart-card">
-                            <div className="chart-header">
-                                <h3>إحصائيات المبيعات والطلبات</h3>
+                        <div className="dashboard-card">
+                            <div className="card-header">
+                                <h3>إحصائيات المبيعات</h3>
                             </div>
                             {overview.chartData && overview.chartData.length > 0 ? (
-                                <AnalyticsChart data={overview.chartData} dataKey="orders" color="#eab308" />
+                                <AnalyticsChart data={overview.chartData} dataKey="orders" color="#D4AF37" />
                             ) : (
                                 <p className="empty-message">لا توجد بيانات للعرض</p>
                             )}

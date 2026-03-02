@@ -8,15 +8,6 @@ import axios from './utils/axios';
 import './App.css'
 
 function App() {
-  useEffect(() => {
-    // Basic visit tracking
-    if (!sessionStorage.getItem('visited')) {
-      axios.post('/api/analytics/visit')
-        .then(() => sessionStorage.setItem('visited', 'true'))
-        .catch(err => console.error(err));
-    }
-  }, [])
-
   return (
     <ThemeProvider>
       <Router>

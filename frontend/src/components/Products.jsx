@@ -1,28 +1,38 @@
-import React, { useState, useEffect } from 'react'
-import axios from '../utils/axios';
+import React, { useState, useEffect, useCallback } from 'react'
+import axios from '../utils/axios'
+import { FaSearch, FaTimes } from 'react-icons/fa'
 import './Products.css'
 
-function Products({ selectedCollection, onAddToCart, onProductClick, collections }) {
+function Products({ selectedCollection, searchQuery, onAddToCart, onProductClick }) {
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true)
-    const [filterCollection, setFilterCollection] = useState(selectedCollection || '')
 
+    // Reload whenever collection or search changes
     useEffect(() => {
-        loadProducts(filterCollection)
-    }, [filterCollection])
+        loadProducts()
+    }, [selectedCollection, searchQuery])
 
-    useEffect(() => {
-        if (selectedCollection !== filterCollection) {
-            setFilterCollection(selectedCollection)
-        }
-    }, [selectedCollection])
-
-    const loadProducts = async (collectionId = '') => {
+    const loadProducts = async () => {
         setLoading(true)
         try {
-            const url = collectionId ? `/api/products?collection=${collectionId}` : '/api/products'
+            let url = '/api/products'
+            const params = []
+            if (selectedCollection) params.push(`collection=${selectedCollection}`)
+            if (params.length) url += '?' + params.join('&')
+
             const response = await axios.get(url)
-            setProducts(response.data.data)
+            let data = response.data.data || []
+
+            // Client-side search filter
+            if (searchQuery && searchQuery.trim()) {
+                const q = searchQuery.trim().toLowerCase()
+                data = data.filter(p =>
+                    p.title?.toLowerCase().includes(q) ||
+                    p.description?.toLowerCase().includes(q)
+                )
+            }
+
+            setProducts(data)
         } catch (error) {
             console.error('Error loading products:', error)
         } finally {
@@ -33,111 +43,81 @@ function Products({ selectedCollection, onAddToCart, onProductClick, collections
     const quickAddToCart = (e, product) => {
         e.stopPropagation()
         if ((product.sizes && product.sizes.length > 0) || (product.colors && product.colors.length > 0)) {
-            // Open modal to choose size and color
             onProductClick(product)
         } else {
-            const cartItem = {
-                product: product,
-                quantity: 1,
-                size: null,
-                color: null
-            }
-            onAddToCart(cartItem)
+            onAddToCart({ product, quantity: 1, size: null, color: null })
         }
     }
 
-    if (loading) {
-        return (
-            <section className="products-section" id="products">
-                <div className="products-header">
-                    <div className="products-background-text">HOODIE</div>
-                    <h2 className="products-title">رحله في عالم الأنيمي</h2>
-                </div>
-                <div className="loading-container">
-                    <div className="loading"></div>
-                </div>
-            </section>
-        )
+    const PLACEHOLDER = 'https://via.placeholder.com/400x500/171717/D4AF37?text=RAHHALAH'
+
+    // Get active filter label
+    const getTitle = () => {
+        if (searchQuery?.trim()) return `نتائج البحث عن "${searchQuery}"`
+        return 'كل الهوديز'
+    }
+
+    const getSubtitle = () => {
+        if (searchQuery?.trim()) return `${products.length} منتج`
+        return 'تشكيلة كاملة من الهوديز الفاخرة'
     }
 
     return (
         <section className="products-section" id="products">
             <div className="products-header">
-                <div className="products-background-text">HOODIE</div>
-                <h2 className="products-title">رحله في عالم الأنيمي</h2>
+                <h2 className="products-title">{getTitle()}</h2>
+                <p className="subtitle">{loading ? '...' : getSubtitle()}</p>
             </div>
 
-            <div className="products-grid">
-                {products.length === 0 ? (
-                    <p className="no-products">لا توجد منتجات متاحة حالياً</p>
-                ) : (
-                    products.map(product => (
-                        <div
-                            key={product._id}
-                            className="product-card"
-                            onClick={() => onProductClick(product)}
-                        >
-                            <div className="product-image-wrapper" style={{ position: 'relative' }}>
-                                <img
-                                    src={product.images[0] || 'https://via.placeholder.com/400x400/000000/FFD700?text=RAHHALAH'}
-                                    alt={product.title}
-                                    className="product-image"
-                                    onError={(e) => e.target.src = 'https://via.placeholder.com/400x400/000000/FFD700?text=RAHHALAH'}
-                                />
-                                {product.isOnSale && (
-                                    <div style={{
-                                        position: 'absolute', top: '10px', right: '10px',
-                                        background: 'var(--primary-gold)', color: 'var(--bg-primary)',
-                                        padding: '4px 10px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold', zIndex: 1
-                                    }}>
-                                        خصم
-                                    </div>
-                                )}
-                            </div>
-                            <div className="product-info">
-                                <h3 className="product-name">{product.title}</h3>
-                                {product.description && (
-                                    <p style={{
-                                        fontSize: '0.85rem',
-                                        color: 'var(--text-muted)',
-                                        margin: '0.25rem 0 0.5rem',
-                                        display: '-webkit-box',
-                                        WebkitLineClamp: 2,
-                                        WebkitBoxOrient: 'vertical',
-                                        overflow: 'hidden'
-                                    }}>
-                                        {product.description}
-                                    </p>
-                                )}
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                                    <p className="product-price" style={{ margin: 0 }}>LE {product.price}.00</p>
-                                    {product.isOnSale && product.originalPrice && (
-                                        <p style={{ textDecoration: 'line-through', color: 'var(--text-muted)', fontSize: '0.9rem', margin: 0 }}>
-                                            LE {product.originalPrice}.00
-                                        </p>
+            {loading ? (
+                <div className="loading-container">
+                    <div className="loading"></div>
+                </div>
+            ) : (
+                <div className="products-grid">
+                    {products.length === 0 ? (
+                        <p className="no-products">
+                            {searchQuery ? `لا توجد نتائج لـ "${searchQuery}"` : 'لا توجد منتجات حالياً'}
+                        </p>
+                    ) : (
+                        products.map(product => (
+                            <div
+                                key={product._id}
+                                className="product-card"
+                                onClick={() => onProductClick(product)}
+                            >
+                                <div className="product-image-wrapper">
+                                    <img
+                                        src={product.images?.[0] || PLACEHOLDER}
+                                        alt={product.title}
+                                        className="product-image"
+                                        onError={(e) => { e.target.src = PLACEHOLDER }}
+                                    />
+                                    {product.isOnSale && (
+                                        <div className="sale-badge">SALE</div>
                                     )}
                                 </div>
-                                <button
-                                    className="add-to-cart-btn"
-                                    onClick={(e) => quickAddToCart(e, product)}
-                                >
-                                    Add to cart
-                                </button>
-                                <div className="product-barcode">
-                                    <div className="barcode-line"></div>
-                                    <div className="barcode-line"></div>
-                                    <div className="barcode-line"></div>
-                                    <div className="barcode-line"></div>
-                                    <div className="barcode-line"></div>
-                                    <div className="barcode-line"></div>
-                                    <div className="barcode-line"></div>
-                                    <div className="barcode-line"></div>
+                                <div className="product-info">
+                                    <h3 className="product-name">{product.title}</h3>
+                                    <div className="price-container">
+                                        <span className="product-price">LE {product.price}</span>
+                                        {product.isOnSale && product.originalPrice && (
+                                            <span className="original-price">LE {product.originalPrice}</span>
+                                        )}
+                                    </div>
+                                    <button
+                                        className="add-to-cart-btn"
+                                        onClick={(e) => quickAddToCart(e, product)}
+                                        disabled={product.stock === 0}
+                                    >
+                                        {product.stock === 0 ? 'نفذ المخزون' : 'أضف للسلة'}
+                                    </button>
                                 </div>
                             </div>
-                        </div>
-                    ))
-                )}
-            </div>
+                        ))
+                    )}
+                </div>
+            )}
         </section>
     )
 }

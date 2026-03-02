@@ -20,7 +20,8 @@ function ProductsManager() {
         discountPercentage: '',
         images: [''],
         sizes: '',
-        colors: ''
+        colors: '',
+        stock: '999'
     })
 
     useEffect(() => {
@@ -90,7 +91,8 @@ function ProductsManager() {
             discountPercentage: product.discountPercentage || '',
             images: product.images && product.images.length > 0 ? product.images : [''],
             sizes: product.sizes ? product.sizes.join(', ') : '',
-            colors: product.colors ? product.colors.join(', ') : ''
+            colors: product.colors ? product.colors.join(', ') : '',
+            stock: product.stock !== undefined ? product.stock : '999'
         })
         setShowModal(true)
     }
@@ -114,7 +116,8 @@ function ProductsManager() {
                 discountPercentage: formData.discountPercentage ? parseFloat(formData.discountPercentage) : null,
                 images: formData.images.filter(img => img && img.trim() !== ''),
                 sizes: formData.sizes ? formData.sizes.split(',').map(s => s.trim()).filter(s => s !== '') : [],
-                colors: formData.colors ? formData.colors.split(',').map(c => c.trim()).filter(c => c !== '') : []
+                colors: formData.colors ? formData.colors.split(',').map(c => c.trim()).filter(c => c !== '') : [],
+                stock: parseInt(formData.stock) || 0
             }
 
             if (editMode && currentId) {
@@ -155,7 +158,8 @@ function ProductsManager() {
             discountPercentage: '',
             images: [''],
             sizes: '',
-            colors: ''
+            colors: '',
+            stock: '999'
         })
     }
 
@@ -215,7 +219,7 @@ function ProductsManager() {
                                         )}
                                     </div>
                                     <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                                        {product.sizes?.length || 0} مقاسات
+                                        {product.sizes?.length || 0} مقاسات | {product.stock || 0} متوفر
                                     </span>
                                 </div>
                             </div>
@@ -378,6 +382,18 @@ function ProductsManager() {
                                         value={formData.colors}
                                         onChange={(e) => setFormData({ ...formData, colors: e.target.value })}
                                         placeholder="أسود, أبيض, رمادي"
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label>الكمية المتوفرة في المخزن (Stock) *</label>
+                                    <input
+                                        type="number"
+                                        value={formData.stock}
+                                        onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                                        required
+                                        min="0"
+                                        placeholder="999"
                                     />
                                 </div>
                             </div>

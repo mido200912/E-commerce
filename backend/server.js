@@ -17,6 +17,7 @@ const productRoutes = require('./routes/product.routes');
 const orderRoutes = require('./routes/order.routes');
 const settingsRoutes = require('./routes/settings');
 const analyticsRoutes = require('./routes/analytics.routes');
+const aiRoutes = require('./routes/ai.routes');
 
 // Initialize app
 const app = express();
@@ -133,6 +134,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Initialize Admin Account
 const Admin = require('./models/Admin');

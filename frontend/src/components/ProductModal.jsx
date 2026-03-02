@@ -3,13 +3,26 @@ import './ProductModal.css'
 
 function ProductModal({ product, onClose, onAddToCart }) {
     const [quantity, setQuantity] = useState(1)
-    const [selectedSize, setSelectedSize] = useState(product?.sizes?.[0] || '')
-    const [selectedColor, setSelectedColor] = useState(product?.colors?.[0] || '')
+    const [selectedSize, setSelectedSize] = useState('')
+    const [selectedColor, setSelectedColor] = useState('')
     const [mainImage, setMainImage] = useState(product?.images?.[0] || '')
 
     if (!product) return null
 
     const handleAddToCart = () => {
+        if (product.sizes && product.sizes.length > 0 && !selectedSize) {
+            alert('يرجى اختيار المقاس');
+            return;
+        }
+        if (product.colors && product.colors.length > 0 && !selectedColor) {
+            alert('يرجى اختيار اللون');
+            return;
+        }
+        if (product.stock !== undefined && quantity > product.stock) {
+            alert('عذراً، الكمية المطلوبة غير متوفرة في المخزن');
+            return;
+        }
+
         const cartItem = {
             product: product,
             quantity: quantity,
@@ -77,6 +90,7 @@ function ProductModal({ product, onClose, onAddToCart }) {
                                 value={selectedSize}
                                 onChange={(e) => setSelectedSize(e.target.value)}
                             >
+                                <option value="">اختر المقاس</option>
                                 {product.sizes.map(size => (
                                     <option key={size} value={size}>{size}</option>
                                 ))}
@@ -92,6 +106,7 @@ function ProductModal({ product, onClose, onAddToCart }) {
                                 value={selectedColor}
                                 onChange={(e) => setSelectedColor(e.target.value)}
                             >
+                                <option value="">اختر اللون</option>
                                 {product.colors.map(color => (
                                     <option key={color} value={color}>{color}</option>
                                 ))}
@@ -100,18 +115,31 @@ function ProductModal({ product, onClose, onAddToCart }) {
                     )}
 
                     <div className="form-group">
-                        <label>الكمية:</label>
+                        <label style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>الكمية:</span>
+                            {product.stock !== undefined && (
+                                <span style={{ color: product.stock > 0 ? 'var(--primary-gold)' : 'var(--text-danger)', fontSize: '0.85rem' }}>
+                                    {product.stock > 0 ? `متوفر في المخزن: ${product.stock}` : 'نفذت الكمية'}
+                                </span>
+                            )}
+                        </label>
                         <input
                             type="number"
                             className="form-control"
                             value={quantity}
-                            onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                            onChange={(e) => setQuantity(Math.max(1, Math.min(product.stock || 1, parseInt(e.target.value) || 1)))}
                             min="1"
+                            max={product.stock}
+                            disabled={!product.stock || product.stock <= 0}
                         />
                     </div>
 
-                    <button className="btn btn-primary" onClick={handleAddToCart}>
-                        أضف للسلة
+                    <button
+                        className="btn btn-primary"
+                        onClick={handleAddToCart}
+                        disabled={!product.stock || product.stock <= 0}
+                    >
+                        {product.stock > 0 ? 'أضف للسلة' : 'غير متوفر حالياً'}
                     </button>
                 </div>
             </div>

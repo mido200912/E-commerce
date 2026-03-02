@@ -63,7 +63,19 @@ exports.getProduct = asyncHandler(async (req, res) => {
 // @route   POST /api/products
 // @access  Private (Admin)
 exports.createProduct = asyncHandler(async (req, res) => {
-    const { title, description, images, collection, price, sizes, colors } = req.body;
+    const {
+        title,
+        description,
+        images,
+        collection,
+        price,
+        originalPrice,
+        isOnSale,
+        discountPercentage,
+        sizes,
+        colors,
+        stock
+    } = req.body;
 
     // Verify collection exists
     const collectionExists = await Collection.findById(collection);
@@ -80,8 +92,12 @@ exports.createProduct = asyncHandler(async (req, res) => {
         images: images || [],
         collection,
         price,
+        originalPrice,
+        isOnSale,
+        discountPercentage,
         sizes: sizes || [],
-        colors: colors || []
+        colors: colors || [],
+        stock: stock !== undefined ? stock : 999
     });
 
     await product.populate('collection', 'name');

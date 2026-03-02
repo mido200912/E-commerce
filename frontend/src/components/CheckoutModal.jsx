@@ -50,11 +50,13 @@ function CheckoutModal({ cart, onClose, onSuccess }) {
         }
 
         try {
-            const response = await axios.post('/api/orders', orderData)
-            onSuccess(response.data.data || orderData)
+            await axios.post('/api/orders', orderData)
+            onSuccess()
         } catch (error) {
             console.error('Error submitting order:', error)
-            alert('حدث خطأ، حاول مرة أخرى')
+            const message = error.response?.data?.message || 'حدث خطأ، حاول مرة أخرى'
+            const details = error.response?.data?.errors?.map(err => err.message).join('\n') || ''
+            alert(`${message}${details ? '\n' + details : ''}`)
         }
     }
 
