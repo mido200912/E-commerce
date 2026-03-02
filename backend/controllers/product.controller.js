@@ -132,14 +132,24 @@ exports.updateProduct = asyncHandler(async (req, res) => {
         }
     }
 
-    product = await Product.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        {
-            new: true,
-            runValidators: true
+    // Merge all fields onto the document so cross-field validators work correctly
+    const fields = ['title', 'description', 'images', 'collection', 'price',
+        'originalPrice', 'isOnSale', 'discountPercentage', 'sizes', 'colors', 'stock', 'isActive'];
+
+    fields.forEach(field => {
+        if (req.body[field] !== undefined) {
+            product[field] = req.body[field];
         }
-    ).populate('collection', 'name');
+    });
+
+    // If isOnSale is false, clear sale-related fields
+    if (req.body.isOnSale === false) {
+        product.originalPrice = undefined;
+        product.discountPercentage = undefined;
+    }
+
+    await product.save();
+    await product.populate('collection', 'name');
 
     res.status(200).json({
         success: true,

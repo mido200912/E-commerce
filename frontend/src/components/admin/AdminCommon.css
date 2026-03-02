@@ -375,6 +375,19 @@
     color: #F5F0E8;
 }
 
+.modal-body {
+    padding: 0.5rem 0 1rem;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(212, 175, 55, 0.1);
+    margin-top: 0.5rem;
+}
+
 .form-group {
     margin-bottom: 1.75rem;
 }

@@ -94,7 +94,12 @@ function Products({ selectedCollection, searchQuery, onAddToCart, onProductClick
                                         onError={(e) => { e.target.src = PLACEHOLDER }}
                                     />
                                     {product.isOnSale && (
-                                        <div className="sale-badge">SALE</div>
+                                        <div className="sale-badge">
+                                            -{product.discountPercentage
+                                                ? product.discountPercentage
+                                                : Math.round((1 - product.price / product.originalPrice) * 100)
+                                            }%
+                                        </div>
                                     )}
                                 </div>
                                 <div className="product-info">
