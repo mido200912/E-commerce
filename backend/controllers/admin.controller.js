@@ -148,3 +148,23 @@ exports.changePassword = asyncHandler(async (req, res) => {
         message: 'Password changed successfully'
     });
 });
+
+// @desc    Update push token
+// @route   PUT /api/admin/push-token
+// @access  Private
+exports.updatePushToken = asyncHandler(async (req, res) => {
+    const { pushToken } = req.body;
+
+    const admin = await Admin.findById(req.admin._id);
+    if (!admin) {
+        return res.status(404).json({ success: false, message: 'Admin not found' });
+    }
+
+    admin.pushToken = pushToken;
+    await admin.save({ validateBeforeSave: false });
+
+    res.status(200).json({
+        success: true,
+        message: 'Push token updated'
+    });
+});

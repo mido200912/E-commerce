@@ -28,6 +28,9 @@ const adminSchema = new mongoose.Schema({
     lastLogin: {
         type: Date
     },
+    pushToken: {
+        type: String
+    },
     createdAt: {
         type: Date,
         default: Date.now

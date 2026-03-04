@@ -1,7 +1,9 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const Admin = require('../models/Admin');
 const { asyncHandler } = require('../middleware/errorHandler.middleware');
 const { generateOrderPDF } = require('../utils/pdfGenerator');
+const { Expo } = require('expo-server-sdk');
 
 const SHIPPING_RATES = {
     'القاهرة': 60,
@@ -157,6 +159,34 @@ exports.createOrder = asyncHandler(async (req, res) => {
         );
     } catch (error) {
         console.error('Error updating analytics:', error);
+    }
+
+    // Send push notifications to all admins connected
+    try {
+        const admins = await Admin.find({ pushToken: { $exists: true, $ne: null } });
+        if (admins.length > 0) {
+            const expo = new Expo();
+            const messages = [];
+            for (let admin of admins) {
+                if (Expo.isExpoPushToken(admin.pushToken)) {
+                    messages.push({
+                        to: admin.pushToken,
+                        sound: 'default',
+                        title: 'طلب جديد! 🎉',
+                        body: `تم استلام طلب جديد من ${customerName} بقيمة ${total} ج.م`,
+                        data: { orderId: order._id },
+                    });
+                }
+            }
+            if (messages.length > 0) {
+                const chunks = expo.chunkPushNotifications(messages);
+                for (let chunk of chunks) {
+                    await expo.sendPushNotificationsAsync(chunk);
+                }
+            }
+        }
+    } catch (e) {
+        console.error('Push notification error:', e);
     }
 
     await order.populate('items.product', 'title images');

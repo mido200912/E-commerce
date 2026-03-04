@@ -5,7 +5,8 @@ const {
     login,
     logout,
     checkAuth,
-    changePassword
+    changePassword,
+    updatePushToken
 } = require('../controllers/admin.controller');
 const { protect } = require('../middleware/auth.middleware');
 const { validate } = require('../middleware/validation.middleware');
@@ -35,5 +36,6 @@ router.post('/login', loginValidation, validate, login);
 router.post('/logout', logout);
 router.get('/check', protect, checkAuth);
 router.put('/change-password', protect, changePasswordValidation, validate, changePassword);
+router.put('/push-token', protect, updatePushToken);
 
 module.exports = router;
