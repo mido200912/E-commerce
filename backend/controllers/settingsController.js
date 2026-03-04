@@ -54,16 +54,18 @@ exports.resetSettings = async (req, res) => {
         const settings = await Settings.getSettings();
 
         // Reset to defaults
-        settings.primaryGold = '#D4AF37';
-        settings.primaryDark = '#0A0A0A';
-        settings.secondaryDark = '#1A1A1A';
-        settings.textLight = '#FFFFFF';
-        settings.textGray = '#B8B8B8';
-        settings.accentGold = '#FFD700';
-        settings.bgDark = '#000000';
-        settings.cardBg = '#151515';
-        settings.borderGold = '#A68B2F';
-        settings.fontFamily = "'Segoe UI', 'Helvetica Neue', Arial, sans-serif";
+        settings.primaryGold = '#000000';
+        settings.secondaryGold = '#171717';
+        settings.accentGold = '#D4AF37';
+        settings.bgPrimary = '#0A0A0A';
+        settings.bgSecondary = '#171717';
+        settings.bgTertiary = '#222222';
+        settings.textPrimary = '#F5F0E8';
+        settings.textSecondary = '#B8A98A';
+        settings.textMuted = '#6B6050';
+        settings.borderLight = 'rgba(212, 175, 55, 0.12)';
+        settings.borderMedium = 'rgba(212, 175, 55, 0.35)';
+        settings.fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
 
         await settings.save();
 

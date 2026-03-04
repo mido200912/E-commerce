@@ -4,11 +4,11 @@ const settingsSchema = new mongoose.Schema({
     // Theme Colors - Light Theme
     primaryGold: {
         type: String,
-        default: '#C9A961'
+        default: '#000000'
     },
     secondaryGold: {
         type: String,
-        default: '#B8935E'
+        default: '#171717'
     },
     accentGold: {
         type: String,
@@ -18,39 +18,39 @@ const settingsSchema = new mongoose.Schema({
     // Background Colors
     bgPrimary: {
         type: String,
-        default: '#FFFFFF'
+        default: '#0A0A0A'
     },
     bgSecondary: {
         type: String,
-        default: '#F8F7F4'
+        default: '#171717'
     },
     bgTertiary: {
         type: String,
-        default: '#F5F3EF'
+        default: '#222222'
     },
 
     // Text Colors
     textPrimary: {
         type: String,
-        default: '#1A1A1A'
+        default: '#F5F0E8'
     },
     textSecondary: {
         type: String,
-        default: '#4A4A4A'
+        default: '#B8A98A'
     },
     textMuted: {
         type: String,
-        default: '#8B8B8B'
+        default: '#6B6050'
     },
 
     // Border Colors
     borderLight: {
         type: String,
-        default: '#E8E6E1'
+        default: 'rgba(212, 175, 55, 0.12)'
     },
     borderMedium: {
         type: String,
-        default: '#D4D2CD'
+        default: 'rgba(212, 175, 55, 0.35)'
     },
 
     // Site Settings
