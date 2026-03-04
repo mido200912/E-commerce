@@ -124,7 +124,7 @@ export default function ProductsScreen() {
     const renderItem = ({ item }) => (
         <View style={styles.card}>
             <Image
-                source={{ uri: item.images && item.images.length > 0 ? item.images[0] : 'https://via.placeholder.com/300' }}
+                source={{ uri: item.images && item.images.length > 0 ? item.images[0] : 'https://via.placeholder.com/300/1E1E1E/D4AF37?text=RAHHALAH' }}
                 style={styles.cardImage}
                 resizeMode="cover"
             />

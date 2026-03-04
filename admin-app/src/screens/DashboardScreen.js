@@ -46,22 +46,22 @@ export default function DashboardScreen() {
                 lightColor: '#D4AF37',
             });
         }
-        if (Device.isDevice) {
-            const { status: existingStatus } = await Notifications.getPermissionsAsync();
-            let finalStatus = existingStatus;
-            if (existingStatus !== 'granted') {
-                const { status } = await Notifications.requestPermissionsAsync();
-                finalStatus = status;
-            }
-            if (finalStatus !== 'granted') {
-                return;
-            }
-            const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
-            try {
-                token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
-            } catch (e) {
-                console.log('Error getting push token', e);
-            }
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+        if (existingStatus !== 'granted') {
+            const { status } = await Notifications.requestPermissionsAsync();
+            finalStatus = status;
+        }
+        if (finalStatus !== 'granted') {
+            alert('تعذر الحصول على إذن الإشعارات');
+            return;
+        }
+        const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+        try {
+            token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+        } catch (e) {
+            console.log('Error getting push token:', e);
+            alert(`خطأ في الإشعارات: ${e.message}`);
         }
         return token;
     }

@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
 import BestSellers from '../components/BestSellers'
 import CollectionSlider from '../components/CollectionSlider'
+import Collections from '../components/Collections'
 import Products from '../components/Products'
 import AIChat from '../components/AIChat'
 import ProductModal from '../components/ProductModal'
@@ -108,22 +109,22 @@ function HomePage() {
 
             <Hero />
 
+            {/* Sale Section */}
+            {!isFiltered && (
+                <CollectionSlider
+                    collection={{ _id: 'sale', name: 'التخفيضات 🏷️' }}
+                    onProductClick={handleProductClick}
+                />
+            )}
+
             {/* Best Sellers – only when no filter */}
             {!isFiltered && (
                 <BestSellers onProductClick={handleProductClick} />
             )}
 
-            {/* Collection Sliders – only when no filter */}
+            {/* Collection Categories Horizontal list */}
             {!isFiltered && collections.length > 0 && (
-                <section className="collections-sliders">
-                    {collections.map(col => (
-                        <CollectionSlider
-                            key={col._id}
-                            collection={col}
-                            onProductClick={handleProductClick}
-                        />
-                    ))}
-                </section>
+                <Collections onFilterByCollection={handleCollectionSelect} />
             )}
 
             {/* All Products – always visible */}

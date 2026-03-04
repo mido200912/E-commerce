@@ -12,8 +12,10 @@ function BestSellers({ onProductClick }) {
 
     const loadBestSellers = async () => {
         try {
-            const response = await axios.get('/api/products?sort=popular&limit=4')
-            const data = response.data.data || []
+            const response = await axios.get('/api/products?sort=popular&limit=20')
+            let data = response.data.data || []
+            data = data.filter(p => p.salesCount >= 10)
+            data = data.slice(0, 5)
             setProducts(data)
         } catch (error) {
             console.error('Error loading best sellers:', error)
@@ -26,7 +28,7 @@ function BestSellers({ onProductClick }) {
     if (loading || products.length === 0) return null
 
     return (
-        <section className="products-section best-sellers">
+        <section className="products-section best-sellers" id="best-sellers">
             <div className="products-header">
                 <h2 className="products-title">أكثر المنتجات مبيعاً</h2>
                 <p className="subtitle">اكتشف تشكيلتنا الأكثر رواجاً</p>

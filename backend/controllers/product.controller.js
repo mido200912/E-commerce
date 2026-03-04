@@ -6,13 +6,23 @@ const { asyncHandler } = require('../middleware/errorHandler.middleware');
 // @route   GET /api/products
 // @access  Public
 exports.getAllProducts = asyncHandler(async (req, res) => {
-    const { collection, minPrice, maxPrice, sort } = req.query;
+    const { collection, minPrice, maxPrice, sort, isOnSale } = req.query;
 
     // Build query
     const query = { isActive: true };
 
     if (collection) {
         query.collection = collection;
+    }
+
+    if (isOnSale !== undefined) {
+        query.isOnSale = isOnSale === 'true';
+        if (query.isOnSale) {
+            query.$or = [
+                { discountPercentage: { $gt: 0 } },
+                { $expr: { $gt: ["$originalPrice", "$price"] } }
+            ];
+        }
     }
 
     if (minPrice || maxPrice) {

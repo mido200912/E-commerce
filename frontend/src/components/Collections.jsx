@@ -49,7 +49,7 @@ function Collections({ onFilterByCollection }) {
                 <h2>المجموعات</h2>
                 <p>اختر من مجموعاتنا المميزة</p>
             </div>
-            <div className="product-grid">
+            <div className="product-grid" style={{ display: 'flex', overflowX: 'auto', gap: '1.5rem', paddingBottom: '1rem', scrollSnapType: 'x mandatory' }}>
                 {collections.length === 0 ? (
                     <p className="empty-message">لا توجد مجموعات متاحة حالياً</p>
                 ) : (
@@ -58,6 +58,7 @@ function Collections({ onFilterByCollection }) {
                             key={collection._id}
                             className="product-card collection-card"
                             onClick={() => handleCollectionClick(collection._id)}
+                            style={{ minWidth: '300px', flex: '0 0 auto', scrollSnapAlign: 'start' }}
                         >
                             <div className="product-info">
                                 <h3 className="product-title">{collection.name}</h3>

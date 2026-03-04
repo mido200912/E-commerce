@@ -1,22 +1,25 @@
 import React, { useState } from 'react'
-import { FaShoppingCart, FaSearch, FaTimes } from 'react-icons/fa'
+import { FaShoppingCart, FaSearch, FaTimes, FaBars } from 'react-icons/fa'
 import './Navbar.css'
 
 function Navbar({ cartCount, onCartClick, collections = [], onCollectionSelect, onSearch }) {
     const [showSearch, setShowSearch] = useState(false)
     const [searchValue, setSearchValue] = useState('')
+    const [showMobileMenu, setShowMobileMenu] = useState(false)
 
     const handleCollectionClick = (collectionId) => {
         if (onCollectionSelect) onCollectionSelect(collectionId)
-        if (onSearch) onSearch('')   // clear search when picking collection
+        if (onSearch) onSearch('')
         setShowSearch(false)
         setSearchValue('')
+        setShowMobileMenu(false)
     }
 
     const handleSearchSubmit = (e) => {
         e.preventDefault()
         if (onSearch) onSearch(searchValue.trim())
-        if (onCollectionSelect) onCollectionSelect('')  // clear collection when searching
+        if (onCollectionSelect) onCollectionSelect('')
+        setShowMobileMenu(false)
     }
 
     const handleSearchClear = () => {
@@ -32,9 +35,14 @@ function Navbar({ cartCount, onCartClick, collections = [], onCollectionSelect, 
         })
     }
 
+    const scrollToSection = (sectionId) => {
+        const el = document.getElementById(sectionId)
+        if (el) el.scrollIntoView({ behavior: 'smooth' })
+        setShowMobileMenu(false)
+    }
+
     return (
         <>
-            {/* Gold top banner */}
             <div className="top-banner">
                 <p>رحالة • هوديز فاخرة 100% قطن • شحن لكل مصر</p>
             </div>
@@ -42,28 +50,13 @@ function Navbar({ cartCount, onCartClick, collections = [], onCollectionSelect, 
             <nav className="navbar">
                 <div className="navbar-content">
 
-                    {/* Left: Collections */}
-                    <ul className="nav-links">
-                        <li><a onClick={() => handleCollectionClick('')}>الكل</a></li>
-                        {collections.slice(0, 3).map(col => (
-                            <li key={col._id}>
-                                <a onClick={() => handleCollectionClick(col._id)} title={col.name}>
-                                    {col.name.length > 14 ? `${col.name.substring(0, 14)}…` : col.name}
-                                </a>
-                            </li>
-                        ))}
-                        {collections.length > 3 && (
-                            <li className="dropdown">
-                                <a>المزيد ▾</a>
-                                <ul className="dropdown-content">
-                                    {collections.slice(3).map(col => (
-                                        <li key={col._id}>
-                                            <a onClick={() => handleCollectionClick(col._id)}>{col.name}</a>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </li>
-                        )}
+                    {/* Left: Standard Nav Links */}
+                    <ul className="nav-links desktop-nav-links">
+                        <li><a onClick={() => scrollToSection('hero')}>الرئيسية</a></li>
+                        <li><a onClick={() => scrollToSection('sale')} style={{ color: 'var(--accent-gold)' }}>التخفيضات</a></li>
+                        <li><a onClick={() => scrollToSection('best-sellers')}>الأكثر مبيعاً</a></li>
+                        <li><a onClick={() => scrollToSection('collections')}>المجموعات</a></li>
+                        <li><a onClick={() => scrollToSection('products')}>المنتجات</a></li>
                     </ul>
 
                     {/* Center: Logo */}
@@ -71,7 +64,7 @@ function Navbar({ cartCount, onCartClick, collections = [], onCollectionSelect, 
                         <span className="logo-text">rahhalah</span>
                     </a>
 
-                    {/* Right: Search + Cart */}
+                    {/* Right: Search + Cart + Mobile Menu */}
                     <ul className="nav-links">
                         <li>
                             <span className="nav-icon" onClick={toggleSearch} title="بحث">
@@ -83,6 +76,11 @@ function Navbar({ cartCount, onCartClick, collections = [], onCollectionSelect, 
                                 <FaShoppingCart />
                                 {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
                             </div>
+                        </li>
+                        <li className="mobile-menu-btn">
+                            <span className="nav-icon" onClick={() => setShowMobileMenu(true)}>
+                                <FaBars />
+                            </span>
                         </li>
                     </ul>
                 </div>
@@ -108,6 +106,22 @@ function Navbar({ cartCount, onCartClick, collections = [], onCollectionSelect, 
                     </form>
                 )}
             </nav>
+
+            {/* Mobile Menu Drawer */}
+            {showMobileMenu && <div className="overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1999 }} onClick={() => setShowMobileMenu(false)} />}
+            <div className={`mobile-drawer ${showMobileMenu ? 'active' : ''}`}>
+                <div className="drawer-header">
+                    <button className="close-drawer" onClick={() => setShowMobileMenu(false)}><FaTimes /></button>
+                    <span className="logo-text" style={{ fontSize: '1.5rem' }}>rahhalah</span>
+                </div>
+                <ul className="drawer-links">
+                    <li><a onClick={() => scrollToSection('hero')}>الرئيسية</a></li>
+                    <li><a onClick={() => scrollToSection('sale')} className="sale-link">التخفيضات</a></li>
+                    <li><a onClick={() => scrollToSection('best-sellers')}>الأكثر مبيعاً</a></li>
+                    <li><a onClick={() => scrollToSection('collections')}>المجموعات</a></li>
+                    <li><a onClick={() => scrollToSection('products')}>المنتجات</a></li>
+                </ul>
+            </div>
         </>
     )
 }

@@ -17,7 +17,11 @@ function Products({ selectedCollection, searchQuery, onAddToCart, onProductClick
         try {
             let url = '/api/products'
             const params = []
-            if (selectedCollection) params.push(`collection=${selectedCollection}`)
+            if (selectedCollection === 'sale') {
+                params.push(`isOnSale=true`)
+            } else if (selectedCollection) {
+                params.push(`collection=${selectedCollection}`)
+            }
             if (params.length) url += '?' + params.join('&')
 
             const response = await axios.get(url)
@@ -54,11 +58,13 @@ function Products({ selectedCollection, searchQuery, onAddToCart, onProductClick
     // Get active filter label
     const getTitle = () => {
         if (searchQuery?.trim()) return `نتائج البحث عن "${searchQuery}"`
+        if (selectedCollection === 'sale') return 'التخفيضات'
         return 'كل الهوديز'
     }
 
     const getSubtitle = () => {
         if (searchQuery?.trim()) return `${products.length} منتج`
+        if (selectedCollection === 'sale') return 'أفضل العروض والخصومات'
         return 'تشكيلة كاملة من الهوديز الفاخرة'
     }
 

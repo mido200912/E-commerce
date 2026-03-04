@@ -26,7 +26,7 @@ function Hero() {
     };
 
     return (
-        <section className="hero" id="home">
+        <section className="hero" id="hero">
             {images.map((src, index) => (
                 <div
                     key={index}

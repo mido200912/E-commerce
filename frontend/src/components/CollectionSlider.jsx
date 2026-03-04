@@ -3,7 +3,7 @@ import axios from '../utils/axios'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import './CollectionSlider.css'
 
-function CollectionSlider({ collection, onProductClick }) {
+function CollectionSlider({ collection, onProductClick, id }) {
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true)
     const scrollContainerRef = useRef(null)
@@ -28,7 +28,11 @@ function CollectionSlider({ collection, onProductClick }) {
 
     const loadCollectionProducts = async () => {
         try {
-            const response = await axios.get(`/api/products?collection=${collection._id}`)
+            let url = `/api/products?collection=${collection._id}`
+            if (collection._id === 'sale') {
+                url = `/api/products?isOnSale=true`
+            }
+            const response = await axios.get(url)
             setProducts(response.data.data)
         } catch (error) {
             console.error('Error loading collection products:', error)
@@ -50,10 +54,10 @@ function CollectionSlider({ collection, onProductClick }) {
     if (loading || products.length === 0) return null
 
     return (
-        <div className="collection-slider-section">
+        <div className="collection-slider-section" id={id || collection._id}>
             <div className="slider-header">
                 <div className="title-wrapper">
-                    <span className="collection-label">COLLECTION</span>
+                    <span className="collection-label">{collection._id === 'sale' ? 'SPECIAL OFFERS' : 'COLLECTION'}</span>
                     <h2 className="collection-title">{collection.name}</h2>
                 </div>
                 <div className="slider-controls">

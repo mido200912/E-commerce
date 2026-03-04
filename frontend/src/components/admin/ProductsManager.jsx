@@ -186,10 +186,10 @@ function ProductsManager() {
                     {products.map(product => (
                         <div className="card" key={product._id}>
                             <img
-                                src={product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/300?text=No+Image'}
+                                src={product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/300/171717/D4AF37?text=No+Image'}
                                 alt={product.title}
                                 className="card-image"
-                                onError={(e) => { e.target.src = 'https://via.placeholder.com/300?text=Error' }}
+                                onError={(e) => { e.target.src = 'https://via.placeholder.com/300/171717/D4AF37?text=Error' }}
                             />
                             {product.isOnSale && (
                                 <div style={{
