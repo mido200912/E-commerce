@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, TextInput, ActivityIndicator, Alert, RefreshControl, Image, ScrollView, Switch } from 'react-native';
-import { Picker } from '@react-native-picker/picker'; // You might need to install this: npx expo install @react-native-picker/picker
+import { Picker } from '@react-native-picker/picker';
 import axios from '../api/axios';
 import { useFocusEffect } from '@react-navigation/native';
 import { Plus, Edit2, Trash2, Tag, ShoppingBag } from 'lucide-react-native';
@@ -15,7 +15,7 @@ export default function ProductsScreen() {
 
     const [formData, setFormData] = useState({
         title: '', description: '', collection: '', price: '', originalPrice: '',
-        isOnSale: false, discountPercentage: '', images: [''], sizes: '', colors: '', stock: '999'
+        isOnSale: false, discountPercentage: '', images: [''], sizes: '', colors: '', stock: '1'
     });
     const [saving, setSaving] = useState(false);
 
@@ -55,8 +55,8 @@ export default function ProductsScreen() {
     const openAddModal = () => {
         setEditingId(null);
         setFormData({
-            title: '', description: '', collection: (collections[0]?._id || ''), price: '', originalPrice: '',
-            isOnSale: false, discountPercentage: '', images: [''], sizes: '', colors: '', stock: '999'
+            title: '', description: '', collection: (collections.length > 0 ? collections[0]._id : ''), price: '', originalPrice: '',
+            isOnSale: false, discountPercentage: '', images: [''], sizes: '', colors: '', stock: '1'
         });
         setModalVisible(true);
     };
@@ -69,7 +69,7 @@ export default function ProductsScreen() {
             isOnSale: item.isOnSale || false, discountPercentage: item.discountPercentage ? String(item.discountPercentage) : '',
             images: item.images && item.images.length > 0 ? item.images : [''],
             sizes: item.sizes ? item.sizes.join(', ') : '', colors: item.colors ? item.colors.join(', ') : '',
-            stock: item.stock !== undefined ? String(item.stock) : '999'
+            stock: item.stock !== undefined ? String(item.stock) : '1'
         });
         setModalVisible(true);
     };
@@ -124,7 +124,7 @@ export default function ProductsScreen() {
     const renderItem = ({ item }) => (
         <View style={styles.card}>
             <Image
-                source={{ uri: item.images && item.images.length > 0 ? item.images[0] : 'https://placeimg.com/300/300/tech' }}
+                source={{ uri: item.images && item.images.length > 0 ? item.images[0] : 'https://via.placeholder.com/300' }}
                 style={styles.cardImage}
                 resizeMode="cover"
             />
@@ -174,7 +174,6 @@ export default function ProductsScreen() {
                 />
             )}
 
-            {/* Edit Modal (Simplified for the app) */}
             <Modal visible={modalVisible} animationType="slide" transparent>
                 <View style={styles.modalBg}>
                     <ScrollView contentContainerStyle={styles.scrollModal} keyboardShouldPersistTaps="handled">
@@ -182,21 +181,72 @@ export default function ProductsScreen() {
                             <Text style={styles.modalTitle}>{editingId ? 'تعديل المنتج' : 'إضافة منتج'}</Text>
 
                             <Text style={styles.label}>اسم المنتج *</Text>
-                            <TextInput style={styles.input} value={formData.title} onChangeText={t => setFormData({ ...formData, title: t })} textAlign="right" />
+                            <TextInput style={styles.input} value={formData.title} onChangeText={t => setFormData({ ...formData, title: t })} textAlign="right" placeholder="مثال: تيشيرت" placeholderTextColor="#666" />
 
-                            <Text style={styles.label}>السعر *</Text>
-                            <TextInput style={styles.input} value={formData.price} onChangeText={t => setFormData({ ...formData, price: t })} keyboardType="numeric" textAlign="right" />
+                            <Text style={styles.label}>الوصف</Text>
+                            <TextInput style={[styles.input, { height: 80 }]} value={formData.description} multiline onChangeText={t => setFormData({ ...formData, description: t })} textAlign="right" placeholder="تفاصيل المنتج" placeholderTextColor="#666" />
 
-                            <Text style={styles.label}>رابط الصورة الأولى</Text>
-                            <TextInput style={styles.input} value={formData.images[0]} onChangeText={t => {
-                                const arr = [...formData.images]; arr[0] = t; setFormData({ ...formData, images: arr });
-                            }} textAlign="right" />
+                            <View style={{ flexDirection: 'row-reverse', gap: 10 }}>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={styles.label}>السعر *</Text>
+                                    <TextInput style={styles.input} value={formData.price} onChangeText={t => setFormData({ ...formData, price: t })} keyboardType="numeric" textAlign="right" placeholder="0.00" placeholderTextColor="#666" />
+                                </View>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={styles.label}>المخزون المتوفر *</Text>
+                                    <TextInput style={styles.input} value={formData.stock} onChangeText={t => setFormData({ ...formData, stock: t })} keyboardType="numeric" textAlign="right" placeholder="10" placeholderTextColor="#666" />
+                                </View>
+                            </View>
+
+                            <View style={[styles.input, { paddingHorizontal: 0, paddingVertical: 0, marginBottom: 16, overflow: 'hidden' }]}>
+                                <Picker
+                                    selectedValue={formData.collection}
+                                    onValueChange={(itemValue) => setFormData({ ...formData, collection: itemValue })}
+                                    style={{ color: '#FFF' }}
+                                    dropdownIconColor="#FFF"
+                                >
+                                    <Picker.Item label="اختر مجموعة *..." value="" />
+                                    {collections.map(c => (
+                                        <Picker.Item key={c._id} label={c.name} value={c._id} />
+                                    ))}
+                                </Picker>
+                            </View>
+
+                            <Text style={styles.label}>روابط الصور</Text>
+                            {formData.images.map((img, idx) => (
+                                <View key={idx} style={{ flexDirection: 'row-reverse', gap: 8, marginBottom: 8 }}>
+                                    <TextInput
+                                        style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                                        value={img}
+                                        onChangeText={t => {
+                                            const arr = [...formData.images];
+                                            arr[idx] = t;
+                                            setFormData({ ...formData, images: arr });
+                                        }}
+                                        textAlign="left"
+                                        placeholder={`https://example.com/image${idx + 1}.jpg`}
+                                        placeholderTextColor="#666"
+                                        autoCapitalize="none"
+                                        keyboardType="url"
+                                    />
+                                    {idx > 0 && (
+                                        <TouchableOpacity onPress={() => {
+                                            const arr = formData.images.filter((_, i) => i !== idx);
+                                            setFormData({ ...formData, images: arr });
+                                        }} style={{ backgroundColor: '#EF4444', padding: 12, borderRadius: 6, justifyContent: 'center' }}>
+                                            <Trash2 color="#FFF" size={20} />
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
+                            ))}
+                            <TouchableOpacity onPress={() => setFormData({ ...formData, images: [...formData.images, ''] })} style={{ padding: 12, alignItems: 'center', backgroundColor: '#333', borderRadius: 6, marginBottom: 16 }}>
+                                <Text style={{ color: '#FFF', fontWeight: 'bold' }}>+ إضافة صورة أخرى</Text>
+                            </TouchableOpacity>
 
                             <Text style={styles.label}>المقاسات (مفصولة بفاصلة)</Text>
-                            <TextInput style={styles.input} value={formData.sizes} onChangeText={t => setFormData({ ...formData, sizes: t })} textAlign="right" />
+                            <TextInput style={styles.input} value={formData.sizes} onChangeText={t => setFormData({ ...formData, sizes: t })} textAlign="right" placeholder="S, M, L, XL" placeholderTextColor="#666" />
 
-                            <Text style={styles.label}>المخزون المتوفر</Text>
-                            <TextInput style={styles.input} value={formData.stock} onChangeText={t => setFormData({ ...formData, stock: t })} keyboardType="numeric" textAlign="right" />
+                            <Text style={styles.label}>الألوان (مفصولة بفاصلة)</Text>
+                            <TextInput style={styles.input} value={formData.colors} onChangeText={t => setFormData({ ...formData, colors: t })} textAlign="right" placeholder="أسود, أبيض" placeholderTextColor="#666" />
 
                             <View style={styles.modalActions}>
                                 <TouchableOpacity style={styles.cancelBtn} onPress={() => setModalVisible(false)} disabled={saving}>
@@ -235,14 +285,14 @@ const styles = StyleSheet.create({
     actionText: { color: '#FFF', fontSize: 14 },
 
     modalBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' },
-    scrollModal: { flexGrow: 1, justifyContent: 'flex-end' },
+    scrollModal: { flexGrow: 1, justifyContent: 'flex-end', paddingTop: 60 },
     modalContent: { backgroundColor: '#1E1E1E', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24, paddingBottom: 40 },
     modalTitle: { color: '#D4AF37', fontSize: 20, fontWeight: 'bold', marginBottom: 20, textAlign: 'right' },
-    label: { color: '#AAA', marginBottom: 8, textAlign: 'right' },
+    label: { color: '#AAA', marginBottom: 8, textAlign: 'right', fontWeight: 'bold' },
     input: { backgroundColor: '#2D2D2D', borderWidth: 1, borderColor: '#444', borderRadius: 6, color: '#FFF', paddingHorizontal: 16, paddingVertical: 12, marginBottom: 16, fontSize: 16 },
-    modalActions: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 },
-    cancelBtn: { flex: 1, padding: 14, alignItems: 'center', marginRight: 10, borderRadius: 6, backgroundColor: '#333' },
+    modalActions: { flexDirection: 'row-reverse', justifyContent: 'space-between', marginTop: 16 },
+    cancelBtn: { flex: 1, padding: 14, alignItems: 'center', marginLeft: 10, borderRadius: 6, backgroundColor: '#333' },
     cancelBtnText: { color: '#FFF', fontSize: 16, fontWeight: 'bold' },
-    saveBtn: { flex: 1, padding: 14, alignItems: 'center', marginLeft: 10, borderRadius: 6, backgroundColor: '#D4AF37' },
+    saveBtn: { flex: 1, padding: 14, alignItems: 'center', marginRight: 10, borderRadius: 6, backgroundColor: '#D4AF37' },
     saveBtnText: { color: '#000', fontSize: 16, fontWeight: 'bold' },
 });

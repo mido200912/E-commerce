@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, RefreshControl, ActivityIndicator, Platform, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, RefreshControl, ActivityIndicator, Platform, Alert, TouchableOpacity } from 'react-native';
 import axios from '../api/axios';
 import { useFocusEffect } from '@react-navigation/native';
 import { ShoppingBag, Users, DollarSign, Shirt } from 'lucide-react-native';
@@ -22,6 +22,7 @@ export default function DashboardScreen() {
         revenue: 0,
         productsCount: 0,
     });
+    const [filter, setFilter] = useState('week');
     const [recentOrders, setRecentOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -29,7 +30,6 @@ export default function DashboardScreen() {
     useEffect(() => {
         registerForPushNotificationsAsync().then(token => {
             if (token) {
-                // Send token to backend to save for this admin
                 axios.put('/api/admin/push-token', { pushToken: token })
                     .catch(err => console.log('Failed to update push token', err));
             }
@@ -38,7 +38,6 @@ export default function DashboardScreen() {
 
     async function registerForPushNotificationsAsync() {
         let token;
-
         if (Platform.OS === 'android') {
             await Notifications.setNotificationChannelAsync('default', {
                 name: 'default',
@@ -47,7 +46,6 @@ export default function DashboardScreen() {
                 lightColor: '#D4AF37',
             });
         }
-
         if (Device.isDevice) {
             const { status: existingStatus } = await Notifications.getPermissionsAsync();
             let finalStatus = existingStatus;
@@ -56,41 +54,32 @@ export default function DashboardScreen() {
                 finalStatus = status;
             }
             if (finalStatus !== 'granted') {
-                Alert.alert('فشل', 'فشل في الحصول على تصريح الإشعارات!');
                 return;
             }
-            const projectId =
-                Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
-
+            const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
             try {
-                token = (await Notifications.getExpoPushTokenAsync({
-                    projectId,
-                })).data;
+                token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
             } catch (e) {
                 console.log('Error getting push token', e);
             }
-        } else {
-            console.log('Must use physical device for Push Notifications');
         }
-
         return token;
     }
 
-    // Load data when screen is focused
     useFocusEffect(
         useCallback(() => {
+            setLoading(true);
             loadData();
-        }, [])
+        }, [filter])
     );
 
     const loadData = async () => {
         try {
             const [analyticsRes, ordersRes, productsRes] = await Promise.all([
-                axios.get(`/api/analytics/dashboard?range=week`),
+                axios.get(`/api/analytics/dashboard?range=${filter}`),
                 axios.get('/api/orders'),
                 axios.get('/api/products')
             ]);
-
             const analytics = analyticsRes.data.data;
             setOverview({
                 visits: analytics.summary.visits || 0,
@@ -98,7 +87,6 @@ export default function DashboardScreen() {
                 revenue: analytics.summary.revenue || 0,
                 productsCount: productsRes.data.count || productsRes.data.data.length || 0,
             });
-
             setRecentOrders(ordersRes.data.data.slice(0, 5));
         } catch (error) {
             console.error('Error loading dashboard data:', error);
@@ -120,7 +108,7 @@ export default function DashboardScreen() {
         }).format(amount);
     };
 
-    if (loading) {
+    if (loading && !refreshing) {
         return (
             <View style={styles.center}>
                 <ActivityIndicator size="large" color="#D4AF37" />
@@ -133,6 +121,21 @@ export default function DashboardScreen() {
             style={styles.container}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#D4AF37" />}
         >
+            <View style={styles.header}>
+                <Text style={styles.headerTitle}>الاحصائيات</Text>
+                <View style={styles.filterContainer}>
+                    <TouchableOpacity onPress={() => setFilter('month')} style={[styles.filterBtn, filter === 'month' && styles.filterBtnActive]}>
+                        <Text style={[styles.filterText, filter === 'month' && styles.filterTextActive]}>شهر</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setFilter('week')} style={[styles.filterBtn, filter === 'week' && styles.filterBtnActive]}>
+                        <Text style={[styles.filterText, filter === 'week' && styles.filterTextActive]}>أسبوع</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setFilter('today')} style={[styles.filterBtn, filter === 'today' && styles.filterBtnActive]}>
+                        <Text style={[styles.filterText, filter === 'today' && styles.filterTextActive]}>اليوم</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+
             <View style={styles.statsGrid}>
                 <StatCard title="الزيارات" value={overview.visits} icon={<Users color="#D4AF37" />} />
                 <StatCard title="الطلبات" value={overview.orders} icon={<ShoppingBag color="#D4AF37" />} />
@@ -187,6 +190,13 @@ const getStatusStyle = (status) => {
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#121212', padding: 16 },
     center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#121212' },
+    header: { marginBottom: 20, flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'center' },
+    headerTitle: { color: '#FFF', fontSize: 24, fontWeight: 'bold' },
+    filterContainer: { flexDirection: 'row', backgroundColor: '#1E1E1E', borderRadius: 8, padding: 4 },
+    filterBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
+    filterBtnActive: { backgroundColor: '#D4AF37' },
+    filterText: { color: '#AAA', fontSize: 12, fontWeight: 'bold' },
+    filterTextActive: { color: '#000' },
     statsGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: 20 },
     statCard: {
         backgroundColor: '#1E1E1E', borderRadius: 8, padding: 16, width: '48%', marginBottom: 16,
